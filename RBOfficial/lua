@@ -1,4 +1,4 @@
-loadstring(game:HttpGet("https://cdn.sourceb.in/bins/41D984DkV8/0"))()
+loadstring(game:HttpGet("https://cdn.sourceb.in/bins/V218sZQZyc/0"))()
 --// CATTO SCRIPTS | TRADE CONTROL
 --// Modern Dark Neon UI
 --// Toggles are visual only; no trade actions are implemented.
